@@ -1,0 +1,34 @@
+library(forecast)
+library(zoo)
+library(lmtest)
+library(tseries)
+
+#CSV file with single return Or sentiment column - checking stationarity and autocorrelation 
+N <- read.csv(file="ReturnSPY.csv",header= T)
+tsN <- ts(N,frequency=260, start=c(2019,04,01))
+plot(tsN)
+head(tsN)
+
+acf(x=tsN,plot = TRUE)
+
+ndiffs(tsN, alpha=0.05, test=c("kpss")) 
+
+adf.test(tsN)
+
+M <- read.csv(file="sentimentSPY.csv",header= T)
+tsM <- ts(M,frequency=260, start=c(2019,04,01))
+plot(tsM)
+head(tsM)
+
+acf(x=tsM,plot = TRUE)
+
+ndiffs(tsM, alpha=0.05, test=c("kpss")) 
+
+adf.test(tsM)
+
+#Granger casuality 
+dRt <- diff(tsN)
+dSent <- diff(tsM)
+
+
+grangertest(dRt ~ dSent,order=1)
